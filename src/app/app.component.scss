@@ -6,6 +6,36 @@
 .background {
     box-sizing: border-box;
     width: 100%;
+    right: 0;
     height: 100vh;
     border: none;
+    z-index: 0;
+}
+
+.sidebar {
+    position: absolute;
+    left: 0;
+    height: 300px;
+    width: 30%;
+    background-color: #000000;
+    z-index: 1;
+
+    .logo {
+        display: flex;
+        align-items: center; /* Center vertically */
+        gap: 5px; /* Space between logo and text */
+        margin-top: 20px;
+        margin-left: 20px;
+        gap: 50%;
+
+        h1 {
+            color: white;
+            font-family: 'LL Riforma', sans-serif;
+            font-weight: 200;
+            font-size: 12px;
+            position: relative;
+            top: 12px;
+
+        }
+    }
 }

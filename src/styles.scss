@@ -1,5 +1,82 @@
 /* You can add global styles to this file, and also import other style files */
+html {
+    background-color: black;
+}
+
 body {
     margin: 0;
     overflow: hidden;
+}
+
+
+/* Regular */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* Light */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+}
+
+/* Light Italic */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-LightItalic.woff2') format('woff2');
+    font-weight: 300;
+    font-style: italic;
+}
+
+/* Medium */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* Medium Italic */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-MediumItalic.woff2') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+}
+
+/* Bold */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-Bold.woff2') format('woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* Bold Italic */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-BoldItalic.woff2') format('woff2');
+    font-weight: 700;
+    font-style: italic;
+}
+
+/* Heavy */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-Heavy.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+}
+
+/* Heavy Italic */
+@font-face {
+    font-family: 'LL Riforma';
+    src: url('/assets/fonts/LLRiforma-HeavyItalic.woff2') format('woff2');
+    font-weight: 900;
+    font-style: italic;
 }
