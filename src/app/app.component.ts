@@ -1,13 +1,19 @@
+import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  imports: [CommonModule],
   standalone: true,
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
   title = 'port';
+  isHomePage = true; // Default to true if the initial page is home
+
+  // Method to set the active page
+  setPage(page: string): void {
+    this.isHomePage = (page === 'home');
+  }
 }

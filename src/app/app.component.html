@@ -1,9 +1,19 @@
 <div class="sidebar">
     <div class="logo">
-        <img src="assets/img/logo-poliakman.svg" width="100px">
-        <h1>EMBRACE THE <br>UNCERTAINTY</h1>
+      <img src="assets/img/logo-poliakman.svg" width="100px">
+      <h1>EMBRACE THE <br>UNCERTAINTY</h1>
     </div>
-    
-</div>
-
-<iframe class="background" src="https://cables.gl/view/j656st"></iframe>
+    <nav class="menu">
+      <a href="#" (click)="setPage('home')">Home</a>
+      <a href="#" (click)="setPage('about')">About Me</a>
+      <a href="#" (click)="setPage('projects')">Projects</a>
+      <a href="#" (click)="setPage('contact')">Contact</a>
+    </nav>
+  </div>
+  
+  <div class="section-panel" *ngIf="!isHomePage">
+    <!-- Section panel content -->
+  </div>
+  
+  <iframe class="background" src="https://cables.gl/view/j656st"></iframe>
+  
