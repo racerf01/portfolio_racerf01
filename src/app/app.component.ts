@@ -1,27 +1,15 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Router, NavigationEnd, RouterModule } from '@angular/router';  // Correct imports
-import { AboutMeComponent } from './components/about-me/about-me.component';
-import { ProjectsComponent } from './components/projects/projects.component';
-import { ContactComponent } from './components/contact/contact.component';
-import { filter } from 'rxjs';  // Correctly import filter
+import { Component } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [
-    CommonModule,
-    AboutMeComponent,
-    ProjectsComponent,
-    ContactComponent,
-    RouterModule  // Use only RouterModule here
-  ],
-  standalone: true,
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  title = 'port';
-  isHomePage = true;
+export class AppComponent {
+  title = 'portfolio';
+  isHomePage = true;  // Default to true to show section-panel on home page
 
   constructor(private router: Router) {}
 
@@ -29,7 +17,7 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(
       filter((event: any) => event instanceof NavigationEnd)
     ).subscribe(() => {
-      this.isHomePage = this.router.url === '/' || this.router.url === '/';
+      this.isHomePage = this.router.url === '/';  // Only true on home page
     });
   }
 }

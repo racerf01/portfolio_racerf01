@@ -1,12 +1,8 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { provideRouter } from '@angular/router';
-import { routes } from './app/app.routes';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-// Set up the router in main.ts (or wherever you're bootstrapping your app)
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideRouter(routes)
-  ]
+import { AppModule } from './app/app.module';
+
+platformBrowserDynamic().bootstrapModule(AppModule, {
+  ngZoneEventCoalescing: true
 })
   .catch(err => console.error(err));
