@@ -1,19 +1,20 @@
 <div class="sidebar">
-    <div class="logo">
-      <img src="assets/img/logo-poliakman.svg" width="100px">
-      <h1>EMBRACE THE <br>UNCERTAINTY</h1>
-    </div>
-    <nav class="menu">
-      <a href="#" (click)="setPage('home')">Home</a>
-      <a href="#" (click)="setPage('about')">About Me</a>
-      <a href="#" (click)="setPage('projects')">Projects</a>
-      <a href="#" (click)="setPage('contact')">Contact</a>
-    </nav>
+  <div class="logo">
+    <img src="assets/img/logo-poliakman.svg" width="100px">
+    <h1>EMBRACE THE <br>UNCERTAINTY</h1>
   </div>
-  
-  <div class="section-panel" *ngIf="!isHomePage">
-    <!-- Section panel content -->
-  </div>
-  
-  <iframe class="background" src="https://cables.gl/view/j656st"></iframe>
-  
+  <nav class="menu">
+    <!-- Home link for the root path -->
+    <a routerLink="/" routerLinkActive="active">Home</a>
+    <a routerLink="/about" routerLinkActive="active">About Me</a>
+    <a routerLink="/projects" routerLinkActive="active">Projects</a>
+    <a routerLink="/contact" routerLinkActive="active">Contact</a>
+  </nav>
+</div>
+
+<!-- Conditionally display the section panel when not on the home page -->
+<div class="section-panel" *ngIf="!isHomePage">
+  <router-outlet></router-outlet>
+</div>
+
+<iframe class="background" src="https://cables.gl/view/j656st" allow="cross-origin"></iframe>
