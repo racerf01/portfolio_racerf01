@@ -5,11 +5,11 @@
 
 .background {
     box-sizing: border-box;
-    width: 100%;
+    width: 100vw;
     right: 0;
     height: 100vh;
     border: none;
-    z-index: 0;
+    position: relative;
 }
 
 .sidebar {
@@ -38,10 +38,11 @@
     }
 
     .menu {
+        position: absolute;
         display: flex;
         flex-direction: column;
-        margin-top: 100px;
-        margin-left: 20px;
+        top: 180px;
+        left: 20px;
         width: 18%;
 
         a {
@@ -68,6 +69,8 @@
     height: 100vh;
     background-color: #141414;
     z-index: 1;
+    overflow-x: hidden;
+    overflow-y: visible;
 }
 
 @media (max-width: 1200px) {
@@ -116,23 +119,23 @@
 
     h1 {
         right: 0px !important;
-        top: 220px !important;
+        top: 80% !important;
         left: 20px;
     }
 
     .sidebar {
         width: 50%;
-        height: 45%;
+        height: 35vh;
     }
 
     .section-panel {
         width: 100%;
-        height: 55%;
+        height: 65vh;
         bottom: 0;
     }
 
     .menu {
-        margin-top: 50px !important; 
+        top: 40% !important;
     }
 }
 
