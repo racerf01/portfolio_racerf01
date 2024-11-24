@@ -1,5 +1,10 @@
-<h1>Web Development</h1>
-<h1>Graphic Design</h1>
-<h1>Photography</h1>
-<h1>Side Projects</h1>
-<h1>Other</h1>
+<div *ngIf="showLinks" class="projects">
+    <a routerLink="web-development" routerLinkActive="active"><h1>Web Development</h1></a>
+    <a routerLink="graphic-design" routerLinkActive="active"><h1>Graphic Design</h1></a>
+    <a routerLink="photography" routerLinkActive="active"><h1>Photography</h1></a>
+    <a routerLink="side-projects" routerLinkActive="active"><h1>Side Projects</h1></a>
+    <a routerLink="other" routerLinkActive="active"><h1>Other</h1></a>
+</div>
+  
+<router-outlet></router-outlet>
+  
