@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -10,17 +10,19 @@ import { filter } from 'rxjs/operators';
 export class ProjectsComponent implements OnInit {
   showLinks: boolean = true;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(private router: Router) {}
 
   ngOnInit() {
     // Listen for route changes
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
-      // Check if the current route is a child of 'projects'
-      const currentRoute = this.route.firstChild?.snapshot.routeConfig?.path;
-      // Hide the links if any child route is active
-      this.showLinks = !currentRoute;
+      // Check if the current URL matches exactly '/projects'
+      const currentUrl = this.router.url;
+      this.showLinks = currentUrl === '/projects'; // Match the exact route
     });
+
+    // Perform an initial check in case the component loads directly on '/projects'
+    this.showLinks = this.router.url === '/projects';
   }
 }

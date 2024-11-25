@@ -13,7 +13,7 @@
   }
   
   .goback img {
-    width: 20px; /* Size of the arrow */
+    width: 35px; /* Size of the arrow */
     margin-bottom: 10px;
   }
   
@@ -24,6 +24,6 @@
     color: white;
     margin: 0; /* Remove default margins from the heading */
     text-decoration: none;
-    cursor: pointer; /* Indicate that it's clickable if you want */
+    text-transform: uppercase;
   }
   
