@@ -125,12 +125,12 @@
 
     .sidebar {
         width: 50%;
-        height: 35vh;
+        height: 35%;
     }
 
     .section-panel {
         width: 100%;
-        height: 65vh;
+        height: 65%;
         bottom: 0;
     }
 
@@ -141,5 +141,29 @@
 
 /* For screens below 576px (mobile devices) */
 @media (max-width: 400px) {
-    
+    .content-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    h1 {
+        right: 0px !important;
+        top: 80% !important;
+        left: 20px;
+    }
+
+    .sidebar {
+        width: 50%;
+        height: 38%;
+    }
+
+    .section-panel {
+        width: 100%;
+        height: 62%;
+        bottom: 0;
+    }
+
+    .menu {
+        top: 40% !important;
+    }
 }
