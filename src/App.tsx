@@ -25,7 +25,11 @@ export function App() {
           shouldShowPanel ? "opacity-100" : "opacity-0"
         )}
       >
-        <MenuRoutePanel isVisible={shouldShowPanel} route={route} />
+        <MenuRoutePanel
+          isVisible={shouldShowPanel}
+          route={route}
+          onClose={() => navigate("/")}
+        />
       </main>
       <BottomStripe route={route} onNavigate={navigate} />
     </div>

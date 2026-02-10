@@ -1,15 +1,17 @@
 import { useMemo, useState } from "react";
-import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpNarrowWide, X } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { type MenuRoute } from "@/lib/menu-routes";
 import { cn } from "@/lib/utils";
 
 type MenuRoutePanelProps = {
   isVisible: boolean;
   route: MenuRoute;
+  onClose: () => void;
 };
 
 const workTabs = ["webdev", "design", "photos", "music", "other"] as const;
@@ -199,7 +201,7 @@ function renderRouteContent(route: MenuRoute) {
   }
 }
 
-export function MenuRoutePanel({ isVisible, route }: MenuRoutePanelProps) {
+export function MenuRoutePanel({ isVisible, route, onClose }: MenuRoutePanelProps) {
   const panelMeta = getPanelMeta(route);
 
   return (
@@ -211,11 +213,28 @@ export function MenuRoutePanel({ isVisible, route }: MenuRoutePanelProps) {
       )}
     >
       <CardHeader className="border-b pb-3">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-          <CardTitle>{panelMeta.title}</CardTitle>
-          <CardDescription className="sm:max-w-2xl sm:text-right">
-            {panelMeta.description}
-          </CardDescription>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0 flex h-8 items-center">
+            <CardTitle className="shrink-0 leading-none">{panelMeta.title}</CardTitle>
+            <Separator
+              orientation="vertical"
+              className="mx-3 shrink-0 data-vertical:h-4 data-vertical:self-center"
+            />
+            <CardDescription className="min-w-0 truncate text-left leading-none">
+              {panelMeta.description}
+            </CardDescription>
+          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            aria-label="Close panel"
+            title="Close panel"
+            className="bg-muted/65 hover:bg-muted/65 shrink-0"
+            onClick={onClose}
+          >
+            <X />
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="min-h-0 flex-1 pb-4 pt-4">
