@@ -1,10 +1,25 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDownWideNarrow, ArrowUpNarrowWide, X } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import {
+  getContentfulEntriesByContentType,
+  hasContentfulBaseConfig,
+  type ContentfulAssetResponse,
+  type ContentfulEntryResponse,
+} from "@/lib/contentful";
 import { type MenuRoute } from "@/lib/menu-routes";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +39,16 @@ type WorkItem = {
   name: string;
   date: string;
   createdAt: number;
+  description?: string;
+  imageUrl?: string;
+};
+
+const contentTypeIdByTab: Record<WorkTab, string> = {
+  webdev: import.meta.env.VITE_CONTENTFUL_CONTENT_TYPE_WEBDEV ?? "webDevProjects",
+  design: import.meta.env.VITE_CONTENTFUL_CONTENT_TYPE_DESIGN ?? "design-projects",
+  photos: import.meta.env.VITE_CONTENTFUL_CONTENT_TYPE_PHOTOS ?? "photosProjects",
+  music: import.meta.env.VITE_CONTENTFUL_CONTENT_TYPE_MUSIC ?? "musicProjects",
+  other: import.meta.env.VITE_CONTENTFUL_CONTENT_TYPE_OTHER ?? "otherProjects",
 };
 
 type PanelMeta = {
@@ -57,6 +82,14 @@ function getPanelMeta(route: MenuRoute): PanelMeta {
 }
 
 function getBaseWorkItems(tab: WorkTab): WorkItem[] {
+  const baseDescriptionByTab: Record<WorkTab, string> = {
+    webdev: "Implementation details, stack decisions, and architecture notes.",
+    design: "Design rationale, system exploration, and visual direction.",
+    photos: "Photo project entry.",
+    music: "Music project entry.",
+    other: "Additional project entry.",
+  };
+
   return Array.from({ length: 8 }).map((_, index) => {
     const createdAt = Date.UTC(2026, 0, 1 + index * 4);
     const date = new Date(createdAt).toISOString().slice(0, 10);
@@ -66,8 +99,137 @@ function getBaseWorkItems(tab: WorkTab): WorkItem[] {
       name: `${tab} item ${index + 1}`,
       date,
       createdAt,
+      description: baseDescriptionByTab[tab],
+      imageUrl: `https://avatar.vercel.sh/${encodeURIComponent(`${tab}-${index + 1}`)}.png?size=480`,
     };
   });
+}
+
+function normalizeContentfulAssetUrl(url?: string): string | undefined {
+  if (!url) {
+    return undefined;
+  }
+
+  if (url.startsWith("//")) {
+    return `https:${url}`;
+  }
+
+  if (url.startsWith("/")) {
+    return `https://images.ctfassets.net${url}`;
+  }
+
+  return url;
+}
+
+function buildContentfulAssetMap(
+  assets?: ContentfulAssetResponse[]
+): Map<string, ContentfulAssetResponse> {
+  const assetMap = new Map<string, ContentfulAssetResponse>();
+  if (!assets) {
+    return assetMap;
+  }
+
+  for (const asset of assets) {
+    if (asset.sys?.id) {
+      assetMap.set(asset.sys.id, asset);
+    }
+  }
+
+  return assetMap;
+}
+
+function collectAssetIds(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => collectAssetIds(item));
+  }
+
+  if (!value || typeof value !== "object") {
+    return [];
+  }
+
+  const maybeLink = value as {
+    sys?: {
+      id?: string;
+      linkType?: string;
+    };
+  };
+
+  if (maybeLink.sys?.id && maybeLink.sys.linkType === "Asset") {
+    return [maybeLink.sys.id];
+  }
+
+  return [];
+}
+
+function getContentfulImageUrl(
+  fields: Record<string, unknown>,
+  assetMap: Map<string, ContentfulAssetResponse>
+): string | undefined {
+  const candidateFields = [fields.image, fields.images, fields.file, fields.files];
+
+  for (const candidateField of candidateFields) {
+    const assetIds = collectAssetIds(candidateField);
+
+    for (const assetId of assetIds) {
+      const asset = assetMap.get(assetId);
+      const file = asset?.fields?.file;
+
+      if (!file?.url) {
+        continue;
+      }
+
+      if (file.contentType && !file.contentType.startsWith("image/")) {
+        continue;
+      }
+
+      return normalizeContentfulAssetUrl(file.url);
+    }
+  }
+
+  return undefined;
+}
+
+function extractContentfulDescription(fields: Record<string, unknown>): string | undefined {
+  const shortDescriptions = [fields.description, fields.titleDescription];
+  for (const descriptionValue of shortDescriptions) {
+    if (typeof descriptionValue === "string" && descriptionValue.trim()) {
+      return descriptionValue.trim();
+    }
+  }
+
+  return undefined;
+}
+
+function mapContentfulEntryToWorkItem(
+  tab: WorkTab,
+  entry: ContentfulEntryResponse,
+  index: number,
+  assetMap: Map<string, ContentfulAssetResponse>
+): WorkItem {
+  const titleField = entry.fields.title;
+  const nameField = entry.fields.name;
+  const dateField = entry.fields.date;
+
+  const name =
+    (typeof titleField === "string" && titleField) ||
+    (typeof nameField === "string" && nameField) ||
+    `${tab} item ${index + 1}`;
+
+  const createdAt = Date.parse(entry.sys.createdAt ?? "") || Date.now();
+  const date =
+    (typeof dateField === "string" && dateField.slice(0, 10)) ||
+    (entry.sys.createdAt ? entry.sys.createdAt.slice(0, 10) : new Date(createdAt).toISOString().slice(0, 10));
+  const description = extractContentfulDescription(entry.fields);
+  const imageUrl = getContentfulImageUrl(entry.fields, assetMap);
+
+  return {
+    id: entry.sys.id || `${tab}-${index + 1}`,
+    name,
+    date,
+    createdAt,
+    description,
+    imageUrl,
+  };
 }
 
 function sortWorkItems(
@@ -93,11 +255,58 @@ function sortWorkItems(
 
 function PlaceholderGrid({
   items,
+  tab,
   className,
 }: {
   items: WorkItem[];
+  tab: WorkTab;
   className?: string;
 }) {
+  if (items.length === 0) {
+    return (
+      <div className={cn("text-muted-foreground rounded-md border p-4 text-xs", className)}>
+        No entries found.
+      </div>
+    );
+  }
+
+  if (tab === "webdev" || tab === "design") {
+    return (
+      <div className={cn("grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-3", className)}>
+        {items.map((item) => (
+          <Card key={item.id} className="relative h-full w-full pt-0">
+            <div className="absolute inset-0 z-30 aspect-video bg-gradient-to-t from-background/90 via-background/45 to-black/10 dark:from-black/75 dark:via-black/45 dark:to-black/20" />
+            <img
+              src={
+                item.imageUrl ??
+                `https://avatar.vercel.sh/${encodeURIComponent(`${tab}-${item.id}`)}.png?size=480`
+              }
+              alt={item.name}
+              className="relative z-20 aspect-video w-full object-cover brightness-75 grayscale dark:brightness-50"
+              loading="lazy"
+            />
+            <CardHeader className="relative z-40">
+              <CardAction>
+                <Badge variant="secondary">{item.date}</Badge>
+              </CardAction>
+              <CardTitle className="text-foreground line-clamp-2">
+                {item.name}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground line-clamp-3">
+                {item.description ?? "Project summary will appear here. Rich content is reserved for detailed view."}
+              </CardDescription>
+            </CardHeader>
+            <CardFooter className="relative z-40">
+              <Button className="w-full" variant="secondary" type="button">
+                View Project
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className={cn("flex flex-wrap gap-3", className)}>
       {items.map((item) => (
@@ -113,17 +322,81 @@ function PlaceholderGrid({
 }
 
 function WorkRoutePanel() {
+  const hasContentful = hasContentfulBaseConfig();
   const [activeTab, setActiveTab] = useState<WorkTab>("webdev");
   const [activeFilter, setActiveFilter] = useState<WorkFilter>("date");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [contentfulError, setContentfulError] = useState<string | null>(null);
+  const [isContentfulLoading, setIsContentfulLoading] = useState(() => hasContentful);
+  const [baseItemsByTab, setBaseItemsByTab] = useState<Record<WorkTab, WorkItem[]>>(
+    () =>
+      workTabs.reduce<Record<WorkTab, WorkItem[]>>((acc, tab) => {
+        acc[tab] = getBaseWorkItems(tab);
+        return acc;
+      }, {} as Record<WorkTab, WorkItem[]>)
+  );
+
+  useEffect(() => {
+    if (!hasContentful) {
+      if (import.meta.env.DEV) {
+        console.warn("[Contentful] Work panel fetch skipped: missing env config", {
+          hasSpaceId: Boolean(import.meta.env.VITE_CONTENTFUL_SPACE_ID),
+          hasDeliveryToken: Boolean(import.meta.env.VITE_CONTENTFUL_DELIVERY_TOKEN),
+        });
+      }
+      return;
+    }
+
+    let isCancelled = false;
+
+    void Promise.all(
+      workTabs.map(async (tab) => {
+        const response = await getContentfulEntriesByContentType(contentTypeIdByTab[tab]);
+        const assetMap = buildContentfulAssetMap(response.includes?.Asset);
+        return [
+          tab,
+          response.items.map((item, index) => mapContentfulEntryToWorkItem(tab, item, index, assetMap)),
+        ] as const;
+      })
+    )
+      .then((results) => {
+        if (isCancelled) {
+          return;
+        }
+
+        setBaseItemsByTab((currentItemsByTab) => {
+          const nextItemsByTab = { ...currentItemsByTab };
+          for (const [tab, items] of results) {
+            nextItemsByTab[tab] = items;
+          }
+
+          return nextItemsByTab;
+        });
+      })
+      .catch((error: unknown) => {
+        if (!isCancelled) {
+          const message = error instanceof Error ? error.message : "Unknown request error.";
+          setContentfulError(message);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) {
+          setIsContentfulLoading(false);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [hasContentful]);
 
   const workItemsByTab = useMemo(
     () =>
       workTabs.reduce<Record<WorkTab, WorkItem[]>>((acc, tab) => {
-        acc[tab] = sortWorkItems(getBaseWorkItems(tab), activeFilter, sortDirection);
+        acc[tab] = sortWorkItems(baseItemsByTab[tab], activeFilter, sortDirection);
         return acc;
       }, {} as Record<WorkTab, WorkItem[]>),
-    [activeFilter, sortDirection]
+    [activeFilter, baseItemsByTab, sortDirection]
   );
 
   return (
@@ -170,9 +443,22 @@ function WorkRoutePanel() {
       </div>
 
       <div className="mt-4 min-h-0 flex-1 overflow-y-auto">
+        {!hasContentful && (
+          <p className="text-muted-foreground mb-3 text-xs">
+            Contentful is disabled. Set <code>VITE_CONTENTFUL_SPACE_ID</code> and{" "}
+            <code>VITE_CONTENTFUL_DELIVERY_TOKEN</code> in <code>.env.local</code>, then restart
+            the dev server.
+          </p>
+        )}
+        {isContentfulLoading && (
+          <p className="text-muted-foreground mb-3 text-xs">Loading Contentful entries...</p>
+        )}
+        {!isContentfulLoading && contentfulError && (
+          <p className="mb-3 text-xs text-red-400">{contentfulError}</p>
+        )}
         {workTabs.map((tab) => (
           <TabsContent key={tab} value={tab} className="mt-0">
-            <PlaceholderGrid items={workItemsByTab[tab]} className="justify-center" />
+            <PlaceholderGrid tab={tab} items={workItemsByTab[tab]} className="justify-center" />
           </TabsContent>
         ))}
       </div>
@@ -181,11 +467,11 @@ function WorkRoutePanel() {
 }
 
 function AboutRoutePanel() {
-  return <PlaceholderGrid items={sortWorkItems(getBaseWorkItems("design"), "name")} />;
+  return <PlaceholderGrid tab="design" items={sortWorkItems(getBaseWorkItems("design"), "name")} />;
 }
 
 function ContactRoutePanel() {
-  return <PlaceholderGrid items={sortWorkItems(getBaseWorkItems("music"), "date")} />;
+  return <PlaceholderGrid tab="music" items={sortWorkItems(getBaseWorkItems("music"), "date")} />;
 }
 
 function renderRouteContent(route: MenuRoute) {
