@@ -220,7 +220,7 @@ export function MenuRoutePanel({ isVisible, route, onClose }: MenuRoutePanelProp
               orientation="vertical"
               className="mx-3 shrink-0 data-vertical:h-4 data-vertical:self-center"
             />
-            <CardDescription className="min-w-0 truncate text-left leading-none">
+            <CardDescription className="text-foreground/80 dark:text-muted-foreground min-w-0 truncate text-left leading-none">
               {panelMeta.description}
             </CardDescription>
           </div>
