@@ -69,7 +69,7 @@ const aboutQuickFacts = [
   { label: "Current Focus", value: "Portfolio and product quality" },
 ];
 const aboutIdentity = {
-  name: "Your Name",
+  name: "Ilia Poliakman",
   currentPosition: "Frontend / Full-stack Developer",
 };
 const skillBadgeSets = [

@@ -5,6 +5,7 @@ import { defineConfig } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: "/", // Root; correct for test.tagline.cz
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
