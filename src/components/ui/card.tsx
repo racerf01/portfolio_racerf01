@@ -11,7 +11,7 @@ function Card({
     <div
       data-slot="card"
       data-size={size}
-      className={cn("ring-foreground/10 bg-card/45 text-card-foreground overflow-hidden rounded-xl pt-0 text-sm data-[size=sm]:gap-3 data-[size=sm]:pb-3 data-[size=sm]:pt-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col", className)}
+      className={cn("ring-foreground/10 bg-card/45 text-card-foreground overflow-hidden rounded-xl pt-0 text-sm data-[size=sm]:gap-3 3 data-[size=sm]:pt-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col", className)}
       {...props}
     />
   )
@@ -67,7 +67,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-content"
-      className={cn("px-4 group-data-[size=sm]/card:px-3", className)}
+      className={cn("overflow-x-auto px-4 pl-5 group-data-[size=sm]/card:px-3 group-data-[size=sm]/card:pl-4", className)}
       {...props}
     />
   )

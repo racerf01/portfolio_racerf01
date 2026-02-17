@@ -38,6 +38,9 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: color-mix(in oklch, var(--foreground) 28%, transparent);
+    --scrollbar-thumb-hover: color-mix(in oklch, var(--foreground) 40%, transparent);
 }
 
 .dark {
@@ -72,6 +75,9 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: color-mix(in oklch, var(--foreground) 34%, transparent);
+    --scrollbar-thumb-hover: color-mix(in oklch, var(--foreground) 48%, transparent);
 }
 
 @theme inline {
@@ -119,6 +125,47 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    }
+  *::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+    border-radius: 9999px;
+    }
+  *::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+    }
+  *::-webkit-scrollbar-button:single-button,
+  *::-webkit-scrollbar-button:single-button:vertical:decrement,
+  *::-webkit-scrollbar-button:single-button:vertical:increment,
+  *::-webkit-scrollbar-button:single-button:horizontal:decrement,
+  *::-webkit-scrollbar-button:single-button:horizontal:increment,
+  *::-webkit-scrollbar-button:double-button,
+  *::-webkit-scrollbar-button:start,
+  *::-webkit-scrollbar-button:end,
+  *::-webkit-scrollbar-button:vertical,
+  *::-webkit-scrollbar-button:horizontal {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    -webkit-appearance: none !important;
+    }
+  *::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-clip: padding-box;
+    }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
     }
   body {
     @apply font-sans bg-background text-foreground;
